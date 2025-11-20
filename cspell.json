@@ -1,0 +1,14 @@
+{
+    "language": "en,en-US",
+    "ignorePaths": [".git", "*.pdf", "*.bib"],
+    "words": [
+        "latexmk",
+        "xelatex",
+        "thm",
+        "lem"
+    ],
+    "ignoreRegExpList": [
+        "\\\\[a-zA-Z]+",  
+        "\\$[^$]+\\$"     
+    ]
+}
