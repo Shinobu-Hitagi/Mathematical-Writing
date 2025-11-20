@@ -1,6 +1,6 @@
 # Mathematical Writing
 
-This repository contains my personal notes on mathematical writing, formatted in LaTeX.
+This repository contains my Xie Zhilin's notes on mathematical writing, formatted in LaTeX.
 
 ## Structure
 
