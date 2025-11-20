@@ -1,0 +1,16 @@
+name: Spell Check
+
+on: [push]
+
+jobs:
+  spellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run CSpell
+        uses: streetsidesoftware/cspell-action@v5
+        with:
+          files: '**/*.tex'
+          inline_custom_dictionaries: true

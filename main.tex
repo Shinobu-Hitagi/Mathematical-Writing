@@ -1,0 +1,666 @@
+%\documentclass[12pt,a4paper]{article}  % Use this line if this document will be released
+\documentclass[12pt,a4paper,draft]{article}  % Use this line if this document is a draft
+\usepackage{ifdraft}
+
+
+%% Bibliography
+\usepackage{etoolbox}
+\newcommand{\bibfile}{\jobname.bib}  % Name of the BibTeX file.
+% ref.bib should be a symbolic link to the universal BibTeX file, which should be a local copy of
+% https://github.com/equipez/bibliographie/blob/main/ref.bib
+% Run `getbib` in the current directory under the draft mode to get the BibTeX file containing only
+% the cited references. The name will be xyz.bib if this TeX file is xyz.tex.
+\newcommand{\universalbib}{ref.bib}
+\ifdraft{\IfFileExists{\universalbib}{\renewcommand{\bibfile}{\universalbib}}{}}{}
+% The counter `cite' is used to count the number of citations.
+\newcounter{cite}
+\pretocmd{\cite}{\stepcounter{cite}}{}{}
+
+
+%% Add line numbers in draft mode
+%%\RequirePackage[mathlines]{lineno}
+%%\ifdraft{\linenumbers}{}
+%%\renewcommand{\linenumberfont}{\normalfont\scriptsize\sffamily\color{gray}}
+%%\setlength{\linenumbersep}{\marginparsep}
+
+
+%% Geometry
+%\voffset=-1.5cm \hoffset=-1.4cm \textwidth=16cm \textheight=22.0cm  % Luis' setting
+\usepackage[a4paper, textwidth=16.0cm, textheight=22.0cm]{geometry}
+\renewcommand{\baselinestretch}{1.2}
+
+
+%% Basic packages
+\usepackage{amsmath,amsthm,amssymb,amsfonts}
+\usepackage{mathtools}  % Provides \coloneqq
+\usepackage{empheq}
+\usepackage{xcolor}
+\usepackage[bbgreekl]{mathbbol}
+\DeclareSymbolFontAlphabet{\mathbbm}{bbold}
+\DeclareSymbolFontAlphabet{\mathbb}{AMSb}
+\usepackage{bbm}
+\usepackage{upgreek}
+\usepackage{accents}
+\usepackage{xspace}
+\usepackage{rotating}
+\usepackage{multirow,booktabs}
+\usepackage{mdframed}
+\usepackage[en-US]{datetime2}
+
+
+%% Format of the table of content
+\usepackage[normalem]{ulem}
+\usepackage[toc,page]{appendix}
+\renewcommand{\appendixpagename}{\Large{Appendix}}
+\renewcommand{\appendixname}{Appendix}
+\renewcommand{\appendixtocname}{Appendix}
+%\usepackage{sectsty}
+\setcounter{tocdepth}{2}
+
+
+%% Section title style
+\usepackage{sectsty}
+\sectionfont{\large}
+\subsectionfont{\large}
+
+
+%% Some colors
+\definecolor{darkblue}{rgb}{0,0.1,0.5}
+\definecolor{darkgreen}{rgb}{0,0.5,0.1}
+\definecolor{darkyellow}{rgb}{0.65,0.65,0.01}
+
+
+%% Todo notes
+\ifdraft{
+    \setlength{\marginparwidth}{2.42cm}
+    \usepackage[tickmarkheight=3pt,textsize=small,backgroundcolor=blue!16,linecolor=purple,bordercolor=purple]{todonotes}
+}{
+    \newcommand{\todo}[1]{}
+    \newcommand{\listoftodos}{}
+}
+
+
+%% Graph, tikz and pgf
+%\usepackage{subfigure}
+\setlength{\unitlength}{1mm}
+% The \unitlength command is a Length command. It defines the units used in the Picture Environment.
+\usepackage{graphicx}
+%\usepackage{tikz,tikzscale,pgf,pgfarrows,pgfnodes,filecontents,tikz-cd}
+\usepackage{tikz,tikzscale,pgf}
+\usetikzlibrary{arrows,arrows.meta,patterns,positioning,decorations.markings,shapes}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepackage[justification=centering]{caption}
+\usepgfplotslibrary{fillbetween}
+\pgfplotsset{compat=1.11}
+
+
+%% Turn off some unharmful warnings in draft mode
+%% N.B.: DO NOT use `silence` together with `hyperref`. They will cause an infinite loop.
+\ifdraft{
+    \usepackage{silence}
+    \WarningFilter{xcolor}{Incompatible color definition on}
+    \WarningFilter{hyperref}{Draft mode on}
+    \WarningFilter{refcheck}{Unused label}
+    \WarningFilter{microtype}{`draft' option active}
+    \WarningFilter{latex}{Writing or overwriting file} % Mute the warning about 'writing/overwriting file'
+    \WarningFilter{latex}{Writing file} % Mute the warning about 'writing/overwriting file'
+    \WarningFilter{latex}{Tab has} % Mute the warning about 'Tab has been converted to Blank Space'
+    \WarningFilter{latex}{Marginpar on page} % Mute the warning about 'Marginpar on page xx moved'
+    \WarningFilter{latex}{author given} % Mute the warning about 'No \author given'
+}{}
+
+
+%% Hyperref, url, and email
+%% N.B.: DO NOT use `silence` together with `hyperref`. They will cause an infinite loop.
+\ifdraft{\usepackage{refcheck}\newcommand{\url}{\texttt}}{
+    \usepackage{hyperref}
+    \hypersetup{colorlinks, linkcolor=darkblue, anchorcolor=darkblue, citecolor=darkblue, urlcolor=darkblue}
+    \usepackage{url}
+} % Check unused labels
+\newcommand{\email}{\texttt}
+
+
+%% Enumerate and itemize
+\usepackage{eqlist}
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=*}
+\setlist[enumerate]{leftmargin=*,label=\normalfont{(\alph*)}}
+
+
+%% Algorithm environment
+\usepackage[section]{algorithm}
+\usepackage{algpseudocode,algorithmicx}
+\newcommand{\INPUT}{\textbf{Input}}
+\newcommand{\FOR}{\textbf{For}~}
+\algrenewcommand\algorithmicrequire{\textbf{Input:}}
+\algrenewcommand\algorithmicensure{\textbf{Output:}}
+\algrenewcommand\alglinenumber[1]{\normalsize #1.}
+\newcommand*\Let[2]{\State #1 $=$ #2}
+
+
+%% Theorem-like environments
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{conjecture}{Conjecture}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{exercise}{Exercise}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{problem}{Problem}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{assumption}{Assumption}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{question}{Question}[section]
+% Change theoremstyle to ``definition'', which uses textnormal for the text.
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{remark}{Remark}[section]
+% proof
+\usepackage{xpatch}
+\xpatchcmd{\proof}{\itshape}{\normalfont\proofnamefont}{}{}
+\newcommand{\proofnamefont}{\bfseries}
+
+%% Equation numbering
+\numberwithin{equation}{section}
+
+
+%% Fine tuning
+\usepackage{microtype}
+\usepackage[nobottomtitles*]{titlesec} % No section title at the bottom of pages
+% Prevent footnote from running to the next page
+\interfootnotelinepenalty=10000
+% No line break in inline math
+\interdisplaylinepenalty=10000
+\relpenalty=10000
+\binoppenalty=10000
+% No widow or orphan lines
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+
+
+% Use @ to put 1 math unit (mu) in math
+% See https://nhigham.com/2013/01/07/fine-tuning-spacing-in-latex-equations/
+% and also TeXbook p. 155.
+\mathcode`@="8000{\catcode`\@=\active\gdef@{\mkern1mu}}
+
+
+%% Operators, commands
+\usepackage{relsize}
+\usepackage{nccmath}
+%\DeclareMathOperator*{\mcap}{\,\medmath{\bigcap}\,}
+%\DeclareMathOperator*{\mcup}{\,\medmath{\bigcup}\,}
+\DeclareMathOperator*{\mcap}{\,\mathsmaller{\bigcap}\,}
+\DeclareMathOperator*{\mcup}{\,\mathsmaller{\bigcup}\,}
+%\renewcommand{\cap}{\mcap}
+%\renewcommand{\cup}{\mcup}
+
+\newcommand{\ceil}[1]{ {\lceil{#1}\rceil} }
+\newcommand{\floor}[1]{ {\lfloor{#1}\rfloor} }
+
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\sort}{sort}
+\DeclareMathOperator*{\Argmax}{Argmax}
+\DeclareMathOperator*{\Argmin}{Argmin}
+\DeclareMathOperator*{\Arglocmin}{Arglocmin}
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\diag}{diag}
+\DeclareMathOperator*{\Diag}{Diag}
+\DeclareMathOperator{\Span}{span}
+\DeclareMathOperator{\med}{med}
+\DeclareMathOperator{\essinf}{essinf}
+\DeclareMathOperator{\cl}{cl}
+\DeclareMathOperator{\vol}{vol}
+\DeclareMathOperator{\comp}{C}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\range}{range}
+\DeclareMathOperator{\card}{card}
+\DeclareMathOperator{\diam}{diam}
+\DeclareMathOperator{\dist}{dist}
+\newcommand{\disth}{{\operatorname{\updelta_{\sss{H}}}}}
+\newcommand{\ind}{\mathbbm{1}}
+%\newcommand*{\defeq}{\stackrel{\mbox{\normalfont\tiny{\textnormal{def}}}}{=}}
+\newcommand\defeq{\mathrel{\overset{\makebox[0pt]{\mbox{\normalfont\tiny\sffamily def}}}{=}}}
+
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\BB}{\mathcal{B}}
+\renewcommand{\SS}{\mathbb{S}}
+\newcommand{\TT}{\mathcal{T}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\FF}{\mathcal{F}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\XX}{\mathcal{X}}
+\newcommand{\sset}{\mathcal{S}}
+\newcommand{\pen}{h}
+\newcommand{\penpar}{\mu}
+\newcommand{\res}{\rho}
+\newcommand{\col}{r}
+\newcommand{\ofd}{\mathcal{F}}
+\newcommand{\stf}[1]{\mathbb{S}^{#1}}
+\newcommand{\sss}[1]{{\scriptscriptstyle{#1}}}
+\newcommand{\sK}{{\scriptscriptstyle{K}}}
+\newcommand{\sT}{{\scriptscriptstyle{T}}}
+\newcommand{\fro}{{\scriptstyle{\textnormal{F}}}}
+\newcommand{\trs}{{\scriptstyle{\mathsf{T}}}}
+\newcommand{\hmt}{{\scriptstyle{{\mathsf{H}}}}}
+\newcommand{\pin}{{\scriptstyle{{\mathsf{+}}}}}
+\newcommand{\inv}{{-1}}
+\newcommand{\adj}{*}
+\newcommand{\ones}{\mathbf{1}}
+
+\newcommand{\cs}{\text{c}}
+\newcommand{\hp}{\circ}
+\newcommand{\cc}{\sss{\textnormal{C}}}
+\newcommand{\dec}{\sss{\textnormal{D}}}
+\newcommand{\cauchy}{\sss{\textnormal{C}}}
+\newcommand{\scauchy}{\sss{\textnormal{S}}}
+\newcommand{\crit}{\textnormal{crit}}
+\newcommand{\rsg}{\hat{\partial}}
+\newcommand{\gsg}{\partial}
+\newcommand{\dom}{\textnormal{dom}}
+\newcommand{\tf}{{\textnormal{f}}}
+\newcommand{\tg}{{\textnormal{g}}}
+\newcommand{\ts}{{\textnormal{s}}}
+\newcommand{\st}{\textnormal{s.t.}}
+\newcommand{\etc}{{etc.}\xspace}
+\newcommand{\ie}{{i.e.}\xspace}
+\newcommand{\eg}{{e.g.}\xspace}
+\newcommand{\etal}{{et al.}\xspace}
+\newcommand{\iid}{\text{i.i.d.}\xspace}
+\newcommand{\as}{\text{a.s.}\xspace}
+
+\newcommand{\me}{\mathrm{e}}
+\newcommand{\md}{\mathrm{d}}
+\newcommand{\mi}{\mathrm{i}}
+\newcommand{\lev}{\mathrm{lev}}
+\newcommand{\bA}{\mathbf{A}}
+\newcommand{\bx}{\mathbf{u}}
+%\newcommand{\bb}{\mathbf{f}}
+\newcommand{\bb}{\mathbf{r}}
+\newcommand{\nov}{n_{\textnormal{o}}}
+\xspaceaddexceptions{]\}}
+% tex.stackexchange.com/questions/15252/why-does-xspace-behave-differently-for-parenthesis-vs-braces-brackets
+\newcommand{\MATLAB}{\textsc{Matlab}\xspace}
+\newcommand{\octave}{\mbox{GNU Octave}\xspace}
+\newcommand{\prblm}{\texttt}
+\DeclareMathAlphabet{\mathsfit}{T1}{\sfdefault}{\mddefault}{\sldefault}
+\SetMathAlphabet{\mathsfit}{bold}{T1}{\sfdefault}{\bfdefault}{\sldefault}
+\newcommand{\prbb}{\mathsfit{p}}
+\newcommand{\pp}{\mathsf{p}}
+\newcommand{\qq}{\mathsf{q}}
+\newcommand{\ttt}{\mathsfit{t}}
+\newcommand{\tol}{\varepsilon}
+\newcommand{\bt}{\mathbf{t}}
+\newcommand{\br}{\mathbf{r}}
+\newcommand{\dd}{\mathbf{d}}
+\newcommand{\ii}{\mathbf{i}}
+\newcommand{\jj}{\mathbf{j}}
+\newcommand{\xx}{\mathbf{x}}
+\renewcommand{\pp}{\mathbf{p}}
+\renewcommand{\ggg}{\mathbf{g}}
+\newcommand{\GG}{\mathbf{G}}
+\DeclareMathOperator{\expc}{\mathbb{E}}
+\renewcommand{\Pr}{\mathbb{P}}
+\newcommand{\lb}{\underline}
+\newcommand{\ub}{\overline}
+
+% mathlcal font
+\DeclareFontFamily{U}{dutchcal}{\skewchar\font=45 }
+\DeclareFontShape{U}{dutchcal}{m}{n}{<-> s*[1.0] dutchcal-r}{}
+\DeclareFontShape{U}{dutchcal}{b}{n}{<-> s*[1.0] dutchcal-b}{}
+\DeclareMathAlphabet{\mathlcal}{U}{dutchcal}{m}{n}
+\SetMathAlphabet{\mathlcal}{bold}{U}{dutchcal}{b}{n}
+
+% mathscr font (supporting lowercase letters)
+%\usepackage[scr=dutchcal]{mathalfa}
+%\usepackage[scr=esstix]{mathalfa}
+%\usepackage[scr=boondox]{mathalfa}
+%\usepackage[scr=boondoxo]{mathalfa}
+\usepackage[scr=boondoxupr]{mathalfa}
+%\newcommand{\model}{\mathscr{h}}
+\newcommand{\model}{\tilde{f}}
+\newcommand{\rmod}{F}
+
+\newcommand{\Set}[1]{\mathcal{#1}}
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it} % The mathpzc font
+\newcommand{\slv}{\mathpzc}
+% mathpzc looks great, but it stops working on 19 Feb 2020 for no reason.
+%\newcommand{\slv}{\mathscr}
+\newcommand{\software}{\texttt}
+\DeclareMathOperator{\eff}{\mathsf{e}\;\!}
+\DeclareMathOperator{\Eff}{\mathsf{E}\;\!}
+\newcommand{\out}{{\text{out}}}
+
+%% Color
+\newcommand{\bad}[1]{\textcolor{red}{#1}}
+\newcommand{\good}[1]{\textcolor{blue}{#1}}
+
+%% Commands for revision
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\green}[1]{\textcolor{darkgreen}{#1}}
+\newcommand{\TYPO}[1]{{\color{orange}{#1}}}
+\newcommand{\MISTAKE}[1]{{\color{violet}{#1}}}
+\newcommand{\REPHRASE}[1]{{\color{darkgreen}{#1}}}
+\newcommand{\REVISE}[1]{{\color{blue}{#1}}}
+\newcommand{\REVISEred}[1]{{\color{red}{#1}}}
+\newcommand{\COMMENT}{\todo}  % Needs the todonotes package
+%\newcommand{\COMMENT}[1]{\textcolor{brown}{{\small{(comment: #1)}}}}  % This puts comments inline
+
+% Use the following if revision is finished
+%\newcommand{\TYPO}{}
+%\newcommand{\MISTAKE}{}
+%\newcommand{\REPHRASE}{}
+%\newcommand{\REVISE}{}
+%\newcommand{\REVISEred}{}
+%\newcommand{\COMMENT}[1]{}  % Input ignored.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Mathematical Writing}
+\author{Xie Zhilin}
+\date{\today}
+
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+%---------------------------------------------------------
+\section{Introduction: Why We Bother with Mathematical Writing?}
+%---------------------------------------------------------
+
+The word \textit{bother} in the title is deliberate. Mathematical writing is not just a skill. It is an art that requires dedication and practice. Good writing can clarify complex ideas, making them accessible to a broader audience. Conversely, poor writing can obscure even the most brilliant concepts. 
+
+Paul Halmos once noted that mathematicians who merely \textit{think} great theorems have not completed their job. They must, like a painter revealing a canvas, effectively \textit{communicate} those ideas to others.
+
+This lecture is about that communication. We will focus on practical, actionable principles to make our technical writing clearer, more elegant, and more effective.
+
+Our work will be guided by two fundamental goals, also from Halmos
+\\
+\begin{quote}
+    \centering
+    \textbf{Do organize.}
+
+\textbf{Do not distract.}
+\end{quote}
+
+\newpage
+\section{Core Rules for Technical Writing}
+This section will be divided into two parts. The first part summarizes general principles for writing mathematics clearly and correctly. The second part provides case studies to illustrate how to apply these principles in practice.
+\subsection{General Principles}
+The following rules are adapted from Donald Knuth's \textit{Mathematical Writing} and tailored for our context.
+\begin{enumerate}
+    \item \textbf{Separate symbols with words.} Symbols in different formulas should be separated by words. 
+    \begin{itemize}[label={},leftmargin=*]
+            \item \bad{Bad:} Let $f(x) = x^\lambda, \lambda>0$.
+    \item \good{Good:} Let $f(x) = x^\lambda$, where $\lambda > 0$.
+    \end{itemize}
+    \item \textbf{Start sentences with words.} Avoid starting sentences with symbols.
+    \begin{itemize}[label={},leftmargin=*]
+            \item \bad{Bad:} $f(x)$ is continuous on $[a,b]$.
+            \item \good{Good:} The function $f(x)$ is continuous on the interval $[a,b]$.
+    \end{itemize}
+    \item \textbf{Use words to connect symbols.} Use words like ``\textit{is}'', ``\textit{equals}'', ``\textit{implies}'' instead of symbols like $\Rightarrow$ and $\iff$.
+    \begin{itemize}[label={},leftmargin=*]
+            \item \bad{Bad:} $f$ is continuous $\Rightarrow$ $f$ is integrable.
+            \item \good{Good:} If $f$ is continuous, then $f$ is integrable.
+    \end{itemize}
+    \item \textbf{Complete statements preceding theorem.} Statements before theorems (algorithms, propositions, etc.) should be complete sentences or ended with a colon.
+    \begin{itemize}[label={},leftmargin=*]
+            \item \bad{Bad:} We have the following theorem
+            
+            \qquad\textbf{Theorem.} $DH(x) = \delta(x)$.
+            \item \good{Good:} We have the following theorem.
+            
+            \qquad\textbf{Theorem.} The Heaviside function satisfies $DH(x) = \delta(x)$.
+    \end{itemize}
+    \item \textbf{Self-contain theorems.} Theorems should be stated in a way that they can be understood without referring to previous text.
+    \begin{itemize}[label={},leftmargin=*]
+            \item \bad{Bad:} \textbf{Theorem.} $DH(x) = \delta(x)$.
+            \item \good{Good:} \textbf{Theorem.} Let $H(x)$ be the Heaviside function defined by $H(x) = 0$ for $x < 0$ and $H(x) = 1$ for $x \geq 0$. Then its distributional derivative satisfies $DH(x) = \delta(x)$, where $\delta(x)$ is the Dirac delta function.
+    \end{itemize}
+    \item \textbf{``\textit{We}'' is better.} Use ``\textit{we}'' instead of ``\textit{I}'' or passive voice.
+    \item \textbf{Don't omit ``\textit{that}''.} Always include the word ``\textit{that}'' in sentences when it helps clarify the meaning.
+    \begin{itemize}[label={},leftmargin=*]
+            \item \bad{Bad:} Assume $f\in L^1(\mathbb{R}^n)$.
+            \item \good{Good:} Assume that $f$ is in $L^1(\mathbb{R}^n)$.
+    \end{itemize}
+    Moreover, don't say ``\textit{which}'' when ``\textit{that}'' is better. We only use ``\textit{which}'' after a comma or a preposition.
+    \item \textbf{Use different words and structures.} Avoid repeating the same words or sentence structures in close proximity. Vary your language to maintain reader interest. 
+    \begin{itemize}[label={},leftmargin=*]
+            \item \bad{Bad:} We first prove the lemma. Then we prove the theorem. Finally, we prove the corollary.
+            \item \good{Good:} We begin by proving the lemma. Next, we establish the theorem. Lastly, we derive the corollary.
+    \end{itemize}
+    But use parallelism when parallel concepts are being discussed. Here is an example from Jost:
+    \begin{itemize}[label={},leftmargin=*]
+            \item \textit{The Ricci curvature is the average of sectional curvatures, and the scalar curvature is the average of Ricci curvatures.}
+    \end{itemize}
+    \item \textbf{Connect formulas with words.} Don't use the homework style to write such as listing formulas one after another without any explanation. Always connect formulas with words.
+    \item \textbf{Define new things twice.} When introducing a new concept, definition, or notation, try to state them in complementary ways twice to reinforce understanding. And all of variables used should be clearly defined when they are first introduced.
+    \item \textbf{Capitalize correctly.} Capitalize the first word of a sentence, proper nouns, and important terms in titles and headings. Avoid unnecessary capitalization of common nouns. But capitalize names of theorems, lemmas, and definitions.
+    \item \textbf{Never abuse subscripts.} Don't get carried away with subscripts, especially when dealing with a set that doesn't need to be indexed. For example, the definition below is troublesome, since its subscripts give the false impression that $Y$ depends on the choice of indices.
+    \begin{quote}
+    \textit{Let $X = \{x_1,\cdots,x_n\}$ be a set. And $Y=\{x_{i_1},\cdots,x_{i_m}\}$ is a subset of $X$.}
+    \end{quote}
+    \item \textbf{Spell out small numbers.} Spell out numbers from zero to nine in words, but not when used as labels or in equations.
+    \begin{itemize}[label={},leftmargin=*]
+            \item \bad{Bad:} There are 3 cases to consider.
+            \item \good{Good:} There are three cases to consider.
+    \end{itemize}
+    \item \textbf{The first one places the first.} The opening paragraph and the first sentence of a section are crucial. They set the tone and context for what follows. Make them clear and engaging. Please emphasize the main objectives and results right at the beginning.
+    \begin{itemize}[label={},leftmargin=*]
+            \item \bad{Bad:} A core concept in harmonic analysis is the Fourier transform.
+            \item \good{Good:} Fourier transform plays a central role in harmonic analysis. 
+        \end{itemize}
+        In Knuth's words, 
+        \begin{quote}
+        \textit{The worst way to start is with the sentence of the form ``An $x$ is $y$.''}
+        \end{quote}
+    \item \textbf{Avoid long strings of symbols.} Long strings of symbols are hard to read and understand. Break them up with words or rephrase them.
+    \begin{itemize}[label={},leftmargin=*]
+                \item \bad{Bad:} Let $f:\mathbb{R}^n\to\mathbb{R}$ be a function in $L^1(\mathbb{R}^n)$ with Fourier transform $\hat{f}:\mathbb{R}^n\to\mathbb{R}$ defined by $\hat{f}(\xi) = \int_{\mathbb{R}^n} f(x)e^{-2\pi i x\cdot \xi} dx$ for all $\xi\in\mathbb{R}^n$.
+                \item \good{Good:} Let $f:\mathbb{R}^n\to\mathbb{R}$ be a function in $L^1(\mathbb{R}^n)$. Its Fourier transform $\hat{f}:\mathbb{R}^n\to\mathbb{R}$ is defined by
+                \[
+                \hat{f}(\xi) = \int_{\mathbb{R}^n} f(x)e^{-2\pi i x\cdot \xi} dx
+                \]
+                for all $\xi\in\mathbb{R}^n$.
+        \end{itemize}
+\end{enumerate}
+
+\subsection{Case Studies}
+Here is a bad example taken from my handwritten notes.
+\\
+\begin{mdframed}
+        {\bf (Bad) Theorem 1.} $u^\ast$ is the minimal point of functional $I$, then
+        \[
+        \int_{t_0}^t L_{u^i}(s,u^\ast(s),\dot{u}^\ast(s)) ds - L_{p^i}(t,u^\ast(t),\dot{u}^\ast(t)) = C
+        \]
+\begin{proof}
+        $\varphi\in C_0^1(J,\mathbb{R}^n)$, 
+        \begin{align*}
+             \Rightarrow I(u^\ast + \epsilon \varphi) - I(u^\ast) \geq0   \\
+             \lim_{\epsilon\to0} \frac{I(u^\ast + \epsilon \varphi) - I(u^\ast)}{\epsilon} = \int_{t_0}^{t_1} \sum_{i=1}^n \left( L_{u^i}(s,u^\ast(s),\dot{u}^\ast(s))\varphi^i(s) + L_{p^i}(s,u^\ast(s),\dot{u}^\ast(s))\dot{\varphi}^i(s) \right) ds \\
+             = \int_{t_0}^{t_1}\sum_{i=1}^n \left( \int_{t_0}^t L_{u^i}(s,u^\ast(s),\dot{u}^\ast(s)) ds - L_{p^i}(t,u^\ast(t),\dot{u}^\ast(t)) \right)\dot{\varphi}^i(t) dt \\
+             \geq 0
+        \end{align*}
+        replace $\epsilon$ with $-\epsilon$, we have
+        \[
+        \int_{t_0}^{t_1}\sum_{i=1}^n \left( \int_{t_0}^t L_{u^i}(s,u^\ast(s),\dot{u}^\ast(s)) ds - L_{p^i}(t,u^\ast(t),\dot{u}^\ast(t)) \right)\dot{\varphi}^i(t) dt \leq 0
+        \]
+        \[
+        \Rightarrow \int_{t_0}^{t_1}\sum_{i=1}^n \left( \int_{t_0}^t L_{u^i}(s,u^\ast(s),\dot{u}^\ast(s)) ds - L_{p^i}(t,u^\ast(t),\dot{u}^\ast(t)) \right)\dot{\varphi}^i(t) dt = 0
+        \]
+        by du Bois-Reymond lemma, we have
+        \[
+        \int_{t_0}^t L_{u^i}(s,u^\ast(s),\dot{u}^\ast(s)) ds - L_{p^i}(t,u^\ast(t),\dot{u}^\ast(t)) = C
+        \]
+\end{proof}
+\end{mdframed}
+
+Let's analyze the issues with this example:
+\begin{itemize}
+        \item It starts with a symbol instead of a word.
+        \item The theorem statement is incomplete and lacks context. It does not define the functional $I$ or the space in which $u^\ast$ resides.
+        \item The proof starts abruptly without a clear introduction or explanation of the strategy.
+        \item There are several instances where symbols are used without accompanying words, making it hard to follow the logic. And symbols such as $\Rightarrow$ are used instead of words.
+        \item The notation is inconsistent and sometimes unclear.
+        \item The overall structure of the proof is disorganized, making it difficult to discern the main steps and conclusions.
+\end{itemize}
+
+We can improve this example by applying the rules discussed earlier. The following is a revised version.
+\\
+\begin{mdframed}
+        \textbf{Revised Version.} Fix an interval $J=[t_0,t_1]$, an open region $\Omega\subset \mathbb{R}^N$. Fixed a continuously differentiable function $L:J\times \Omega \times \mathbb{R}^N \to \mathbb{R}$ where $L=L(t,u,p)$ for $t\in J$, $u\in\Omega$, and $p\in\mathbb{R}^N$. We denote by $C^1(J,\mathbb{R}^N )$ the set of continuously differentiable functions from $J$ to $\mathbb{R}^N$. Let $a,b$ in $\mathbb{R}^N$ be fixed vectors and $M$ be the set defined by
+        \[
+        M = \{ u\in C^1(J,\mathbb{R}^N ) \mid u(t_0) = a, u(t_1) = b \}.
+        \]
+        We consider the functional $I:M\to \mathbb{R}$ defined by
+        \[
+        I(u) = \int_{t_0}^{t_1} L(t,u(t),\dot{u}(t)) dt,
+        \]
+        where $\dot{u}(t)$ denotes the gradient of $u$ at $t$, that is
+        \[
+        \dot{u}(t) = \left( \frac{du^1}{dt}(t),\cdots,\frac{du^N}{dt}(t) \right).
+        \]
+        A \textit{minimizer} of $I$ is an element $u^\ast$ in $M$ such that there exists a neighborhood $U$ of $u^\ast$ under the $C^1(J,\mathbb{R}^N )$ norm that satisfies
+        \[
+        I(u^\ast) \leq I(u), \quad \forall u\in U\cap M.
+        \]
+        We want to find a necessary condition for $u^\ast$ to be a minimizer of $I$. Like optimization problems in finite-dimensional spaces, we consider variations of $u^\ast$ in the direction of a test function $\varphi=(\varphi^1,\cdots,\varphi^i,\cdots,\varphi^N)$ in $C_0^1(J,\mathbb{R}^N)$, the set of continuously differentiable functions from $J$ to $\mathbb{R}^N$ that vanish at the endpoints $t_0$ and $t_1$. Assume that when it satisfies $|\epsilon|<\epsilon_0$ then $u^\ast + \epsilon \varphi$ belongs to the neighborhood $U$. Since $u^\ast$ is a minimizer of $I$, we have
+        \[
+        I(u^\ast + \epsilon \varphi) - I(u^\ast) \geq 0.
+        \]
+        We transform this problem into the minimization of the following function:
+        \[
+        \min_{|\epsilon|<\epsilon_0} g_{\varphi}(\epsilon), \quad \text{where } g(\epsilon) = I(u^\ast + \epsilon \varphi)
+        \]
+        Since $g_{\varphi}(\epsilon)$ attains its minimum at $\epsilon = 0$, we have
+        \[
+        g_{\varphi}'(0) = \lim_{\epsilon\to0} \frac{I(u^\ast + \epsilon \varphi) - I(u^\ast)}{\epsilon} = 0.
+        \]
+        Let us compute $g_{\varphi}'(0)$, we put the limit inside the integral since $L$ is continuously differentiable
+        \begin{align*}
+                   g_{\varphi}'(0) &= \lim_{\epsilon\to0} \frac{I(u^\ast + \epsilon \varphi) - I(u^\ast)}{\epsilon}   \\
+                   &= \int_{t_0}^{t_1} \sum_{i=1}^N \left( L_{u^i}(t,u^\ast(t),\dot{u}^\ast(t))\varphi^i(t) + L_{p^i}(t,u^\ast(t),\dot{u}^\ast(t))\dot{\varphi}^i(t) \right) dt 
+        \end{align*}
+        We observe that the first term can be integrated by parts and its boundary terms vanish since $\varphi$ is in $C_0^1(J,\mathbb{R}^N)$, that is
+        \begin{align*}
+                   \int_{t_0}^{t_1} L_{u^i}(t,u^\ast(t),\dot{u}^\ast(t))\varphi^i(t) dt = - \int_{t_0}^{t_1} \left(\int_{t_0}^t L_{u^i}(s,u^\ast(s),\dot{u}^\ast(s)) ds\right)\dot{\varphi}^i(t) dt
+        \end{align*}
+        for each $i=1,\cdots,N$. Thus we have
+        \[
+        g'_\varphi(0) = \int_{t_0}^{t_1}\sum_{i=1}^N \left(L_{p^i}(t,u^\ast(t),\dot{u}^\ast(t)) - \int_{t_0}^t L_{u^i}(s,u^\ast(s),\dot{u}^\ast(s)) ds   \right)\dot{\varphi}^i(t) dt = 0.
+        \]
+        Since $\varphi$ is an arbitrary function in $C_0^1(J,\mathbb{R}^N)$, we assume $\varphi^j = 0$ for all $j\neq i$. Then for each $i = 1,\cdots,N$, the equation above reduces to
+        \begin{equation}\label{eq:1}
+        \int_{t_0}^{t_1}\left(L_{p^i}(t,u^\ast(t),\dot{u}^\ast(t)) - \int_{t_0}^t L_{u^i}(s,u^\ast(s),\dot{u}^\ast(s)) ds   \right)\dot{\varphi}^i(t) dt = 0.
+        \end{equation}
+        This equation is concerned with function $\varphi^i$. Thus we need a lemma to remove it.
+        \begin{lemma}[du Bois-Reymond]
+        Let $f\in C([a,b],\mathbb{R})$. If
+        \[
+        \int_a^b f(t)\dot{\varphi}(t) dt = 0, \quad \forall \varphi\in C_0^1([a,b],\mathbb{R}),
+        \]
+        then $f(t)$ equals $c$ for some constant $c\in\mathbb{R}$ and for all $t\in[a,b]$.
+        \end{lemma}
+        \begin{proof}
+        Define $c$ and $\varphi$ as follows
+        \[
+        c = \frac{1}{b-a}\int_a^b f(t) dt,\quad\varphi(t) = \int_a^t (f(s) - c) ds.
+        \]
+        Then $\varphi$ belongs to $C_0^1([a,b],\mathbb{R})$ and
+        \[
+        \int_a^b f(t)\dot{\varphi}(t) dt = \int_a^b f(t)(f(t) - c) dt = \int_a^b (f(t) - c)^2 dt = 0.
+        \]
+        Thus $f(t)$ is $c$ almost everywhere. Since $f$ is continuous, we have $f(t) = c$ for all $t\in[a,b]$.
+        \end{proof}
+        By applying du Bois-Reymond Lemma to equation \eqref{eq:1}, we obtain the following necessary condition for $u^\ast$ to be a minimizer of $I$.
+        \begin{theorem}[Euler-Lagrange Equation]
+      If $u^\ast$ is a minimizer of the functional $I$, then for each $i=1,\cdots,N$, it satisfies
+        \[
+        L_{p^i}(t,u^\ast(t),\dot{u}^\ast(t)) - \int_{t_0}^t L_{u^i}(s,u^\ast(s),\dot{u}^\ast(s)) ds  = C,
+        \]
+        where $L_{u^i}$ and $L_{p^i}$ denote the partial derivatives of $L$ with respect to its second and third arguments, and $C$ is a constant.
+        \begin{proof}
+                Let $f$ defined by
+                \[
+                f(t) = L_{p^i}(t,u^\ast(t),\dot{u}^\ast(t)) - \int_{t_0}^t L_{u^i}(s,u^\ast(s),\dot{u}^\ast(s)) ds.
+                \]
+                By equation \eqref{eq:1} and du Bois-Reymond Lemma, we have
+                \[
+                f(t) = L_{p^i}(t,u^\ast(t),\dot{u}^\ast(t)) - \int_{t_0}^t L_{u^i}(s,u^\ast(s),\dot{u}^\ast(s)) ds = C
+                \]
+                for some constant $C\in\mathbb{R}$ and all $t\in[t_0,t_1]$. This completes the proof.
+        \end{proof}
+\end{theorem}
+\end{mdframed}
+
+As we can observe, the revised version starts with a clear context and definitions, making it easier for readers to understand the theorem and its proof. The proof is structured logically, with each step explained in detail and connected with words. Symbols are used appropriately, and the overall presentation is more organized and reader-friendly.
+\newpage
+\section{Writing Style and Artistry}
+Conventions introduced in Section 2 help us write a \textit{correct} mathematical text. However, correctness alone does not guarantee clarity or elegance and what we need to convey our ideas effectively is a suitable \textit{writing style}. 
+
+The reason why I use the word \textit{suitable} is that writing style is often subjective and can vary based on the audience, context, and personal preferences. For instance, Professor Herbert Wilf himself edits two very different journals: \textit{The Journal of Algorithms} and \textit{The American Mathematical Monthly}. The former is a research journal focusing on algorithms, and results presented there are new, important and significant to this field. As a result, the writing style is formal, concise, and technical. There is little leeway for personal expression, and the emphasis is on clarity and precision. On the other hand, \textit{The American Mathematical Monthly} is a journal that aims to present mathematical ideas in an accessible and engaging manner to a broader audience. The writing style here is more relaxed, conversational, and often includes anecdotes or historical context to make the content more relatable. (What is interesting is that this style perhaps attracts others to send "proof" of Fermat's Last Theorem to this journal!)
+
+Though different styles play different roles, those good writing styles often share some common characteristics. Here are some general tips to develop a good mathematical writing style.
+\begin{enumerate}
+        \item \textbf{Get the attention of readers immediately.} Snappy titles, engaging introductions, and clear statements of purpose can help capture the reader's interest from the outset.
+        
+        For example, Hugh Thurston (not the famous William Thurston who can observe a 7-dimensional sphere in 8-dimensional space) began his paper with the sentence ``Can a graph be continuous and discontinuous?''. This immediately piques the reader's curiosity and sets the stage for the discussion on fractal geometry.
+        \item \textbf{Get everything up front.} Tell your readers in plain English what you are going to write about before you start writing about it. This helps readers understand the context and purpose of your work.
+        \item \textbf{Remember: Readers scan papers when they are reading.} Potential readers will skim through your paper to decide whether to read it in detail. Use bold face to emphasize and summarize key points, and use section headings to guide readers through the structure of your paper.
+        \item \textbf{Motivation is necessary, but too much is harmful.} Presenting examples that do not yield desired results can help motivate the need for new definitions or theorems. However, excessive motivation can distract readers from the main content. Strike a balance by providing just enough motivation to clarify the purpose of your work without overwhelming the reader.
+\end{enumerate}
+
+As examples, we list several superb textbooks of mathematics.
+    \begin{itemize}[label={},leftmargin=*]
+        \item \textit{Functional Analysis} by Yosida. This classic textbook is known for its rigorous approach to functional analysis. Yosida's writing style is concise and precise, making complex concepts accessible to advanced undergraduate and graduate students. Yosida's clear explanations and structured presentation make it a valuable resource for students and researchers in the field.
+        \item \textit{Algebra: Chapter 0} by Paolo Aluffi. This textbook takes a unique approach to teaching algebra by starting from category theory. Aluffi's writing style is engaging and intuitive, and he uses numerous examples to illustrate abstract concepts.
+        \item \textit{Introduction to Smooth Manifolds} by John M. Lee. Lee's writing style is clear and thorough, providing detailed explanations and examples that help readers grasp the intricacies of differential geometry and smooth manifolds.
+    \end{itemize}
+
+The chosen books are from three different major subfields of mathematics: analysis, algebra, and geometry. Each book is well-regarded for its clarity, depth, and pedagogical approach, making them excellent examples of good mathematical writing style. An interesting observation is that books in analysis seem to prioritize rigor and precision, while books in algebra and geometry often emphasize intuition and visualization. This reflects the different nature of these subfields and the types of thinking they require.
+
+Besides writing style, another noticeable word is \textit{art}. By Nils Nilson, writing can be both art and communication. A key word of art is \textit{COMPOSITION}, we summarize it as a formula
+\[
+\text{composition} = \text{organization} + \text{simplification}
+\]
+But if writing is to be art, we must first master the craft of writing. We give an overview of some important aspects.
+\begin{enumerate}
+        \item \textbf{Write, rewrite, and rewrite again.} Writing is a process that involves multiple drafts and revisions. The first draft is rarely perfect, and it is essential to revisit and refine your work to improve clarity, coherence, and style.
+        \item \textbf{Read as much as you can.} Reading widely in mathematics and other fields can expose you to different writing styles, techniques, and ideas. This can help you develop your own voice and improve your writing skills.
+        \item \textbf{Master the medium.} Writing needs a good vocabulary. There are issues other than pure language: indexes, tables, figures, and how to use them to best advantage. Learning to use typesetting systems like \LaTeX\  can help you produce professional-quality documents.
+        \item \textbf{Simplify.} Strive for simplicity in your writing. Avoid unnecessary complexity, jargon, and convoluted sentences. Aim to convey your ideas in the clearest and most straightforward manner possible.
+        \item \textbf{Avoid recycling.} Reusing phrases, sentences, or paragraphs from previous works can lead to redundancy and a lack of originality. Each piece of writing should be fresh and tailored to its specific purpose and audience.
+\end{enumerate}
+\newpage
+\section{Writing in the Real World: Refereeing}
+Refereeing is an essential part of the academic publishing process. A paper submitted to an academic journal is usually passed to one or more referees by the editor. Each referee is expected to read the paper carefully, evaluate its quality, and provide constructive feedback to the editor and the authors. 
+
+Professor Donald Knuth once had an interesting experience of his now-famous research on ``The Toilet Paper Problem''. It was first published in \textit{The American Mathematical Monthly}. Donald joked to the editor (Paul Halmos) that many readers probably keep their copies in the bathroom. In response, Halmos commented ``jokes are dangerous in our journal'', especially for these scatological ones. Finally, Donald agreed to change the section names, which originally were ``An absorbing barrier'', ``A process of elimination'', and ``Residues'' as innocuous bathroom humor, but he insisted on keeping the original title.
+
+Refereeing is not like working as a real referee in a stadium, who judges the performance of athletes. Instead, refereeing is more like being a reader and author, the purpose of which is to improve the quality of a paper and encourage high standards of writing in the mathematical community. Here are some tips for effective refereeing:
+\begin{enumerate}
+        \item \textbf{Be a teacher.} The author you criticize today will write another new version of the paper tomorrow. Your comments should help the author improve their work and learn from their mistakes. Therefore over-critical comments should be avoided.
+        \item \textbf{Giving references to related works.} If you know of relevant literature that the author has not cited, it is helpful to provide references. This can help the author situate their work within the broader context of the field and acknowledge prior contributions.
+        \item \textbf{Spend less time on grammar and typos.} While it is important to point out significant grammatical errors or typos that affect the clarity of the paper, spending too much time on minor issues can detract from the overall evaluation of the work. Focus on the content and structure of the paper first, and only address grammar and typos if they significantly impede understanding.
+\end{enumerate}
+
+Here is another experience from Professor Knuth. In 1960, Knuth had just began to edit for \textit{Communication of the ACM} and \textit{Journal of the ACM}. He had no way to know which of his referees were good or bad. So he sent each referee a copy of his own paper on an interesting algorithm but written in a poor style. The result was that some referees simply went through the paper line by line and listed their complaints point by point. Another made much more general comments about the overall structure and clarity of the paper. A third said that the paper contained little that was new and supplied a substantial bibliography of related work to refer to. From this experiment, we can see that good referees are not necessarily those who find the most mistakes, but those who provide constructive feedback that helps improve the quality of the paper.
+
+\newpage
+\section{Useful References}
+From esoteric to practical, here are some useful references for further reading on mathematical writing.
+\begin{enumerate}
+        \item \textit{The Oxford English Dictionary}. Famous for its historical approach to the English language, providing definitions and etymologies of words over time.
+        \item \textit{The American Heritage Dictionary}. This dictionary also takes a historical perspective but includes more contemporary usage and examples.
+        \item \textit{The Longman Dictionary of Contemporary English}. Instead of the historical words found in the mentioned two dictionaries, this dictionary focuses on current usage and contemporary meanings in very simple English.
+        \item \textit{Webster's New Word Speller Divider}. People who don't spell well can use this book to check spelling.
+        \item \textit{Roget's Thesaurus}. This book is a synonym dictionary that helps writers find alternative words and phrases to enhance their writing.
+        \item \emph{Webster's Dictionary of Synonyms}. A resource filled with choice examples of synonyms and antonyms to enrich vocabulary.
+\end{enumerate}
+\end{document}
